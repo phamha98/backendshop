@@ -338,11 +338,9 @@ class ProductsCustomer extends Controller
             //dd($productdetails);
             for ($i = 0; $i < count($productdetails); $i++) {
                 $table = new product_type_details;
-
                 $string = "productdetails." . (string)$i;;
-
+                
                 $table->id_type_main = $request->input($string . ".id_type_main");
-
                 $table->name = $request->input($string . ".name");
                 $table->details = $request->input($string . ".details");
                 $table->price = $request->input($string . ".price");
@@ -389,3 +387,4 @@ class ProductsCustomer extends Controller
         }
     }
 }
+ 

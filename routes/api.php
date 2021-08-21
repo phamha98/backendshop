@@ -44,7 +44,7 @@ Route::prefix('products_customer')->group(function () {
     Route::post('setup_products', 'Api\ProductsCustomer@setup_products');
 });
 
-
+ 
 //Bills_Customer
 Route::group(
     ['prefix' => '/bills_customer', 'middleware' => ['verfiy-account']],
