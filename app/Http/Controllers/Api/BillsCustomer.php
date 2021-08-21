@@ -49,13 +49,14 @@ class BillsCustomer extends Controller
                 $product_f->number = $product_f->number - $bill_details->number;
                 $product_f->save(); //in
             }
+
             $billstate = new Bill_state; //in
             $billstate->id_bill = $bill->id;
             $billstate->state = '1';
             $billstate->id_user_order = $request->id_user; //ID_USER LÀ NGƯỜI ĐẶT HÀNG
 
             $billstate->save();
-            DB::commit(); 
+            DB::commit();
             return response()->json([
                 'code' => 200,
                 'message' => "sucess",
@@ -65,7 +66,8 @@ class BillsCustomer extends Controller
             DB::rollBack();
             return response()->json([
                 'code' => 401,
-                'msg' => "Lỗi không order được" . $e,
+                'msg' => "Lỗi không đặt hàng được",
+                "err"=>$e
             ], 401);
         }
     }

@@ -78,7 +78,7 @@ class AcountCustomer extends Controller
         } else {
             return response()->json([
                 'code' => 401,
-                'msg' => "Email hoặc mật khẩu không sai"
+                'msg' => "Email hoặc mật khẩu không đúng"
             ], 401);
         }
     }

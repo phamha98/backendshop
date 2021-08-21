@@ -15,8 +15,8 @@ class CreateBillDetailsTable extends Migration
     {
         Schema::create('bill_details', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string("id_bill")->unique();
-            $table->string("id_product")->unique();
+            $table->string("id_bill");
+            $table->string("id_product");
             $table->integer("number");
             $table->float("price");
             $table->timestamps();
