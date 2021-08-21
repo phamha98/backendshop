@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Bill_details extends Model
 {
     //
-    protected $table="Bill_details";
+    protected $table="bill_details"; 
     public function product (){
         return $this->belongsTo("App\Product","id_product","id");
     }
