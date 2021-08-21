@@ -55,7 +55,7 @@ class BillsCustomer extends Controller
             $billstate->id_user_order = $request->id_user; //ID_USER LÀ NGƯỜI ĐẶT HÀNG
 
             $billstate->save();
-            DB::commit();
+            DB::commit(); 
             return response()->json([
                 'code' => 200,
                 'message' => "sucess",
@@ -65,7 +65,7 @@ class BillsCustomer extends Controller
             DB::rollBack();
             return response()->json([
                 'code' => 401,
-                'msg' => "Lỗi không đặt hàng được" . $e,
+                'msg' => "Lỗi không order được" . $e,
             ], 401);
         }
     }
