@@ -48,7 +48,7 @@ Route::prefix('products_customer')->group(function () {
 //Bills_Customer
 Route::group(
     ['prefix' => '/bills_customer', 'middleware' => ['verfiy-account']],
-    function () {
+    function () { 
         Route::post('/insert_fullbills', 'Api\BillsCustomer@insert_fullbills');
         Route::post('/show_billstate_user', 'Api\BillsCustomer@show_billstate_user');
         Route::post('/show_billdetail', 'Api\BillsCustomer@show_billdetail');

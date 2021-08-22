@@ -67,7 +67,7 @@ class BillsCustomer extends Controller
             return response()->json([
                 'code' => 401,
                 'msg' => "Lỗi không đặt hàng được",
-                "err"=>$e
+                "err" => $e
             ], 401);
         }
     }
@@ -148,11 +148,14 @@ class BillsCustomer extends Controller
             ], 401);
         }
     }
+    //******************************************** */
     //showstateuser
     public function show_billstate_user(Request $request)
     {
 
+
         $bills1 = DB::table('bills')->where('id_user', $request->id_user)->get();
+        $type = $request->type;
         $billconfirm = array();
         $billtransport = array();
         $billsuccess = array();
@@ -169,7 +172,27 @@ class BillsCustomer extends Controller
             if ($staterow->state == 3) array_push($billsuccess, $staterow);
             if ($staterow->state == 4) array_push($billcancel, $staterow);
         }
-        return response()->json([
+        if ($type == 1) return response()->json([
+            'code' => 200,
+            'data' =>  $billconfirm,
+            'msg' => "success"
+        ], 200);
+        if ($type == 2) return response()->json([
+            'code' => 200,
+            'data' =>  $billtransport,
+            'msg' => "success"
+        ], 200);
+        if ($type == 3) return response()->json([
+            'code' => 200,
+            'data' =>  $billsuccess,
+            'msg' => "success"
+        ], 200);
+        if ($type == 4) return response()->json([
+            'code' => 200,
+            'data' =>  $billcancel,
+            'msg' => "success"
+        ], 200);
+        if ($type == 0) return response()->json([
             'code' => 200,
             'billconfirm' =>  $billconfirm,
             'billtransport' =>  $billtransport,
