@@ -160,6 +160,7 @@ class BillsCustomer extends Controller
         $billtransport = array();
         $billsuccess = array();
         $billcancel = array();
+        $all = array();
         foreach ($bills1 as $bills) {
             $bill_id = $bills->id;
             $staterow = DB::table('bill_states')
@@ -167,6 +168,7 @@ class BillsCustomer extends Controller
                 ->first();
             $staterow->total_price = $bills->total_price;
             $staterow->date = $bills->date;
+            array_push($all, $staterow);
             if ($staterow->state == 1) array_push($billconfirm, $staterow);
             if ($staterow->state == 2) array_push($billtransport, $staterow);
             if ($staterow->state == 3) array_push($billsuccess, $staterow);
@@ -199,6 +201,11 @@ class BillsCustomer extends Controller
             'billsuccess' =>  $billsuccess,
             'billcancel' =>  $billcancel,
 
+        ], 200);
+        if ($type == -1) return response()->json([
+            'code' => 200,
+            'data' =>  $all,
+            'msg' => "success"
         ], 200);
     }
 }
