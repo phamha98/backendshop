@@ -152,6 +152,6 @@ Route::group(
 //Stastic
 Route::prefix('stastic')->group(function () {
     Route::post('/time', 'Api\Stastic@stastic_time');
-    Route::post('/statistic_customer', 'Api\Stastic@statistic_customer');
-    
+    Route::post('/customer', 'Api\Stastic@statistic_customer');
+    Route::post('/product', 'Api\Stastic@statistic_product');
 });

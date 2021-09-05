@@ -39,6 +39,10 @@ class AcountCustomer extends Controller
                 'email' => $request->email,
                 'password' => bcrypt($request->password)
             ]);
+            DB::table("role_user")->insert([
+                "id_role" => "4",
+                "id_user" =>  $userCreate->id,
+            ]);
             if ($userCreate)
                 return response()->json([
                     'code' => 200,
