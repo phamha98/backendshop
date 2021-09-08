@@ -3,21 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Bills;
-use App\Bill_details;
-use App\Bill_state;
-use App\Session_user;
+use App\ImageAlbum;
 use App\Product;
-use App\User;
 use App\product_type_details;
 use App\product_type_main;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-use App\ImageAlbum;
-use Illuminate\Support\Facades\Storage;
-
-require("MediaFunction.php");
+require "MediaFunction.php";
 class GoodsAdmin extends Controller
 {
 
@@ -33,13 +26,12 @@ class GoodsAdmin extends Controller
         }
         return response()->json([
             'code' => 200,
-            'data' =>  $tables
+            'data' => $tables,
         ], 200);
     }
     //insert_type_main
     public function insert_type_main(Request $request)
     {
-
 
         $insert = new product_type_main();
         $insert->name = $request->input('name');
@@ -56,19 +48,22 @@ class GoodsAdmin extends Controller
                     'message' => "Đường dẫn Sai",
                 ], 401);
             }
-            if (@file_get_contents($url, false, NULL, 0, 1)) {
+            if (@file_get_contents($url, false, null, 0, 1)) {
                 $MediaFunction = new MediaFunction();
                 $insert->img = $MediaFunction->checkUrlImage($url);
-            } else return response()->json([
-                'code' => 401,
-                'message' => "Đường dẫn không tồn tại",
-            ], 401);
+            } else {
+                return response()->json([
+                    'code' => 401,
+                    'message' => "Đường dẫn không tồn tại",
+                ], 401);
+            }
+
         }
         //________
         if ($insert->save()) {
             return response()->json([
                 'code' => 200,
-                'message' => "Thành công"
+                'message' => "Thành công",
             ], 200);
         }
         return response()->json([
@@ -102,29 +97,32 @@ class GoodsAdmin extends Controller
                     "url" => $url,
                     "update" => $update,
                     "id" => $request->input("id"),
-                    "name" => $request->name
+                    "name" => $request->name,
                 ], 200);
             }
-            if (@file_get_contents($url, false, NULL, 0, 1)) {
+            if (@file_get_contents($url, false, null, 0, 1)) {
                 $url = $request->input("url");
                 $MediaFunction = new MediaFunction();
                 $img = $MediaFunction->checkUrlImage($url);
-            } else return response()->json([
-                'code' => 401,
-                'message' => "Đường dẫn không tồn tại",
-            ], 401);
+            } else {
+                return response()->json([
+                    'code' => 401,
+                    'message' => "Đường dẫn không tồn tại",
+                ], 401);
+            }
+
         }
 
         $update = DB::table("product_type_mains")
             ->where('id', $request->input("id"))
             ->update([
                 "name" => $request->input("name"),
-                "img" => $img
+                "img" => $img,
             ]);
 
         return response()->json([
             'code' => 200,
-            'message' => "SUCESS"
+            'message' => "SUCESS",
         ], 200);
     }
     //all for product type detail
@@ -157,7 +155,7 @@ class GoodsAdmin extends Controller
         }
         return response()->json([
             'code' => 200,
-            'data' =>  $array_product_details
+            'data' => $array_product_details,
         ], 200);
     }
     //
@@ -176,7 +174,7 @@ class GoodsAdmin extends Controller
         $images = ImageAlbum::where('id_type_details', $request->id_type_details)
             ->select("id", "name")
             ->get();
-        foreach ($images as  $image) {
+        foreach ($images as $image) {
             $img = $image->name;
             if (!filter_var($img, FILTER_VALIDATE_URL)) {
                 $image->name = asset('storage/imagetypemain/' . $img);
@@ -185,7 +183,7 @@ class GoodsAdmin extends Controller
         $product_details->array_img = $images;
         return response()->json([
             'code' => 200,
-            'data' =>  $product_details
+            'data' => $product_details,
         ], 200);
     }
     public function list_goods(Request $request)
@@ -193,7 +191,7 @@ class GoodsAdmin extends Controller
         $product_type_details = DB::table("product_type_details")
             ->select("id", "id_type_main", "name", "price", "sale", "new", "img", "gender", "type")
             ->get();
-        foreach ($product_type_details as  $product_type_detail) {
+        foreach ($product_type_details as $product_type_detail) {
             $img = $product_type_detail->img;
             if (!filter_var($img, FILTER_VALIDATE_URL)) {
                 $product_type_detail->img = asset('storage/imagetypemain/' . $img);
@@ -211,13 +209,13 @@ class GoodsAdmin extends Controller
             $product_type_detail->product_type_main = product_type_main::where("id", $product_type_detail->id_type_main)
                 ->select("name")->first();
             $product_type_detail->total_size = $total_size;
-            $product_type_detail->array_size  = $array_size;
+            $product_type_detail->array_size = $array_size;
             array_push($array_product_details, $product_type_detail);
         }
         //ren so luong san pham cho moi size
         return response()->json([
             'code' => 200,
-            'data' =>  $array_product_details
+            'data' => $array_product_details,
         ], 200);
     }
     // public function search_goods_name
@@ -226,7 +224,7 @@ class GoodsAdmin extends Controller
 
         $products_details = product_type_details::where("name", 'like', "%{$request->search_name}%")
             ->get();
-        foreach ($products_details as  $products_detail) {
+        foreach ($products_details as $products_detail) {
             $img = $products_detail->img;
             if (!filter_var($img, FILTER_VALIDATE_URL)) {
                 $products_detail->img = asset('storage/imagetypemain/' . $img);
@@ -251,7 +249,7 @@ class GoodsAdmin extends Controller
         //___________________________________________
         return response()->json([
             'code' => 200,
-            'data' =>  $array_product_details
+            'data' => $array_product_details,
         ], 200);
     }
 
@@ -261,7 +259,7 @@ class GoodsAdmin extends Controller
 
         $products_details = DB::table("product_type_details")->where("new", '=', $request->new)
             ->get();
-        foreach ($products_details as  $products_detail) {
+        foreach ($products_details as $products_detail) {
             $img = $products_detail->img;
             if (!filter_var($img, FILTER_VALIDATE_URL)) {
                 $products_detail->img = asset('storage/imagetypemain/' . $img);
@@ -286,7 +284,7 @@ class GoodsAdmin extends Controller
         //___________________________________________
         return response()->json([
             'code' => 200,
-            'data' => $products_details
+            'data' => $products_details,
         ], 200);
     }
     // public function search_goods_sale
@@ -295,7 +293,7 @@ class GoodsAdmin extends Controller
 
         $products_details = DB::table("product_type_details")->where("sale", $request->type, $request->sale)
             ->get();
-        foreach ($products_details as  $products_detail) {
+        foreach ($products_details as $products_detail) {
             $img = $products_detail->img;
             if (!filter_var($img, FILTER_VALIDATE_URL)) {
                 $products_detail->img = asset('storage/imagetypemain/' . $img);
@@ -320,7 +318,7 @@ class GoodsAdmin extends Controller
         //ren so luong san pham cho moi size
         return response()->json([
             'code' => 200,
-            'data' =>  $products_details
+            'data' => $products_details,
         ], 200);
     }
     //public function sort_goods_gender
@@ -329,7 +327,7 @@ class GoodsAdmin extends Controller
         if ($request->gender === "tat") {
             $products_details = DB::table("product_type_details")
                 ->get();
-            foreach ($products_details as  $products_detail) {
+            foreach ($products_details as $products_detail) {
                 $img = $products_detail->img;
                 if (!filter_var($img, FILTER_VALIDATE_URL)) {
                     $products_detail->img = asset('storage/imagetypemain/' . $img);
@@ -338,7 +336,7 @@ class GoodsAdmin extends Controller
         } else {
             $products_details = DB::table("product_type_details")->where("gender", "=", $request->gender)
                 ->get();
-            foreach ($products_details as  $products_detail) {
+            foreach ($products_details as $products_detail) {
                 $img = $products_detail->img;
                 if (!filter_var($img, FILTER_VALIDATE_URL)) {
                     $products_detail->img = asset('storage/imagetypemain/' . $img);
@@ -363,7 +361,7 @@ class GoodsAdmin extends Controller
         //ren so luong san pham cho moi size
         return response()->json([
             'code' => 200,
-            'data' =>  $products_details
+            'data' => $products_details,
         ], 200);
     }
     // public function sort_goods_totalnumber
@@ -397,8 +395,8 @@ class GoodsAdmin extends Controller
                 "product_type_details.img"
             )
             ->orderBy('total_number', $request->type)
-            ->get();;
-        foreach ($products_details as  $products_detail) {
+            ->get();
+        foreach ($products_details as $products_detail) {
             $img = $products_detail->img;
             if (!filter_var($img, FILTER_VALIDATE_URL)) {
                 $products_detail->img = asset('storage/imagetypemain/' . $img);
@@ -421,7 +419,7 @@ class GoodsAdmin extends Controller
         //ren so luong san pham cho moi size
         return response()->json([
             'code' => 200,
-            'data' =>  $products_details
+            'data' => $products_details,
         ], 200);
     }
     // public function sort_goods_price
@@ -443,7 +441,7 @@ class GoodsAdmin extends Controller
             )
             ->orderBy('money', 'desc')
             ->get();
-        foreach ($products_details as  $products_detail) {
+        foreach ($products_details as $products_detail) {
             $img = $products_detail->img;
             if (!filter_var($img, FILTER_VALIDATE_URL)) {
                 $products_detail->img = asset('storage/imagetypemain/' . $img);
@@ -467,7 +465,7 @@ class GoodsAdmin extends Controller
         //ren so luong san pham cho moi size
         return response()->json([
             'code' => 200,
-            'data' =>  $products_details
+            'data' => $products_details,
         ], 200);
     }
     //END SEARCH
@@ -476,77 +474,79 @@ class GoodsAdmin extends Controller
 
         DB::beginTransaction();
         try {
-            $url = $request->input("img");
+        $url = $request->input("img");
+        $image = $url;
+        if (substr($url, 0, 5) == "data:") {
+            $base64 = $request->input("img");
+            $MediaFunction = new MediaFunction();
+            $image = $MediaFunction->saveImgBase64($base64, 'imagetypemain');
+        } else if (strpos($url, asset('')) === 0) {
+            $image = basename($url);
+        }
+
+        $product_detail = product_type_details::where("id", $request->id_type_details) 
+            ->update(
+                [
+                    'id_type_main' => $request->id_type_main,
+                    'name' => $request->name,
+                    'details' => $request->details,
+                    'price' => $request->price,
+                    'sale' => $request->sale,
+                    'new' => $request->new,
+                    'img' => $image,
+                    'gender' => $request->gender,
+                    'type' => "open",
+
+                ]
+            );
+             
+        DB::table('image_albums')->where('id_type_details', 'like', $request->id_type_details)->delete();
+        $image_albums = $request->input('image_albums');
+        for ($i = 0; $i < count($image_albums); $i++) {
+            $string = "image_albums." . (string) $i;
+            $temp_url = $request->input($string . ".name");
+            $temp_base64 = $request->input($string . ".base64");
+
+            $nameImage = $url;
             if (strpos($url, asset('')) === 0) {
-                $image = basename($url);
-            } else {
-                $base64 = $request->input("img");
+                $nameImage = basename($temp_url);
+            }
+            if (!empty($temp_base64)) {
+                $base64 = $request->input($string . ".base64");
                 $MediaFunction = new MediaFunction();
-                $image = $MediaFunction->saveImgBase64($base64, 'imagetypemain');
+                $nameImage = $MediaFunction->saveImgBase64($base64, 'imagetypemain');
             }
 
-            $product_detail = product_type_details::where("id", $request->id_type_details)
+            DB::table('image_albums')->insert(
+                [
+                    'id_type_details' => $request->id_type_details,
+                    'name' => $nameImage,
+                ]
+            );
+        }
+        $where_products = Product::where("id_type_details", $request->id_type_details)->get();
+        for ($i = 0; $i < count($where_products); $i++) {
+            $string = "products." . (string) $i;
+            Product::where("id", $where_products[$i]->id)
                 ->update(
                     [
-                        'id_type_main' => $request->id_type_main,
-                        'name' => $request->name,
-                        'details' => $request->details,
-                        'price' => $request->price,
-                        'sale' => $request->sale,
-                        'new' => $request->new,
-                        'img' => $image,
-                        'gender' => $request->gender,
-                        'type' => "open"
-
+                        'size' => $request->input($string . ".size"),
+                        'number' => $request->input($string . ".number"),
                     ]
                 );
-            //insert imgs album
-            // $where_image_albums = ImageAlbum::where("id_type_details", $request->id_type_details)->get();
+        }
 
-            DB::table('image_albums')->where('id_type_details', 'like', $request->id_type_details)->delete();
-            $image_albums = $request->input('image_albums');
-            for ($i = 0; $i < count($image_albums); $i++) {
-                $string = "image_albums." . (string)$i;
-                $url =  $request->input($string . ".name");
-                if (strpos($url, asset('')) === 0) {
-                    $nameImage = basename($url);
-                } else {
-                    $base64 = $request->input($string . ".base64");
-                    $MediaFunction = new MediaFunction();
-                    $nameImage = $MediaFunction->saveImgBase64($base64, 'imagetypemain');
-                }
-                DB::table('image_albums')->insert(
-                    [
-                        'id_type_details' => $request->id_type_details,
-                        'name' => $nameImage
-                    ]
-                );
-            }
-
-
-            $where_products = Product::where("id_type_details", $request->id_type_details)->get();
-
-            for ($i = 0; $i < count($where_products); $i++) {
-                $string = "products." . (string)$i;
-                Product::where("id", $where_products[$i]->id)
-                    ->update(
-                        [
-                            'size' => $request->input($string . ".size"),
-                            'number' => $request->input($string . ".number"),
-                        ]
-                    );
-            }
-
-            DB::commit();
-            return response()->json([
-                'code' => 200,
-                'message' => "success"
-            ], 200);
-        } catch (\Exception $e) {
+        DB::commit();
+        return response()->json([
+            'code' => 200,
+            'message' => "success",
+        ], 200);
+        }
+        catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'code' => 401,
-                'message' => "khong chen dc",
+                'message' => "Lỗi"+$e,
             ], 401);
         }
     }
@@ -569,13 +569,13 @@ class GoodsAdmin extends Controller
                     'new' => $request->new,
                     'img' => $img1,
                     'gender' => $request->gender,
-                    'type' => "open"
+                    'type' => "open",
 
                 ]
             );
             $image_albums = $request->input('image_albums');
             for ($i = 0; $i < count($image_albums); $i++) {
-                $string = "image_albums." . (string)$i;
+                $string = "image_albums." . (string) $i;
 
                 $base64 = $request->input($string . ".base64");
                 $MediaFunction = new MediaFunction();
@@ -584,13 +584,13 @@ class GoodsAdmin extends Controller
                 DB::table('image_albums')->insert(
                     [
                         'id_type_details' => $product_detail->id,
-                        'name' => $img2
+                        'name' => $img2,
                     ]
                 );
             }
             $products = $request->input('products');
             for ($i = 0; $i < count($products); $i++) {
-                $string = "products." . (string)$i;
+                $string = "products." . (string) $i;
                 DB::table('products')->insert(
                     [
                         'id_type_details' => $product_detail->id,
@@ -600,11 +600,10 @@ class GoodsAdmin extends Controller
                 );
             }
 
-
             DB::commit();
             return response()->json([
                 'code' => 200,
-                'message' => $product_detail
+                'message' => $product_detail,
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -615,7 +614,6 @@ class GoodsAdmin extends Controller
         }
     }
 
-
     public function delete_type_main(Request $request)
     {
 
@@ -625,7 +623,7 @@ class GoodsAdmin extends Controller
             DB::commit();
             return response()->json([
                 'code' => 200,
-                'insert' => ""
+                'insert' => "",
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -644,12 +642,12 @@ class GoodsAdmin extends Controller
             $table = DB::table("product_type_details")
                 ->where("id", $id_product_detail)
                 ->update([
-                    "type" => "close"
+                    "type" => "close",
                 ]);
             DB::commit();
             return response()->json([
                 'code' => 200,
-                'table' => $table
+                'table' => $table,
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -659,5 +657,5 @@ class GoodsAdmin extends Controller
             ], 401);
         }
     }
-    
+
 }
