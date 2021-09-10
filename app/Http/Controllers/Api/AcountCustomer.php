@@ -3,14 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Bills;
-use App\Bill_details;
-use App\Bill_state;
 use App\Session_user;
-use App\Product;
 use App\User;
-use App\product_type_details;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -24,34 +19,40 @@ class AcountCustomer extends Controller
             'email' => $request->email,
             'password' => $request->password,
         ];
-        if (User::where("email", $request->email)===1) return response()->json([
-            'code' => 401,
-            'message' => "Email đã được đăng ký, vui lòng đăng ký bằng email khác!"
-        ], 401);
+        if (User::where("email", $request->email) === 1) {
+            return response()->json([
+                'code' => 401,
+                'message' => "Email đã được đăng ký, vui lòng đăng ký bằng email khác!",
+            ], 401);
+        }
+
         if (auth()->attempt($dataCheckRegister)) {
             return response()->json([
                 'code' => 401,
-                'message' => "Tài khoản đã tồn tại"
+                'message' => "Tài khoản đã tồn tại",
             ], 401);
         } else {
-            $userCreate =  User::create([
+            $userCreate = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => bcrypt($request->password)
+                'password' => bcrypt($request->password),
             ]);
             DB::table("role_user")->insert([
                 "id_role" => "4",
-                "id_user" =>  $userCreate->id,
+                "id_user" => $userCreate->id,
             ]);
-            if ($userCreate)
+            if ($userCreate) {
                 return response()->json([
                     'code' => 200,
-                    'message' => "Bạn đã đăng ký thành công"
+                    'message' => "Bạn đã đăng ký thành công",
                 ], 200);
-            else return response()->json([
-                'code' => 200,
-                'message' => "Đăng ký thất bại"
-            ], 200);
+            } else {
+                return response()->json([
+                    'code' => 200,
+                    'message' => "Đăng ký thất bại",
+                ], 200);
+            }
+
         }
     }
     //login
@@ -69,7 +70,7 @@ class AcountCustomer extends Controller
                     'refresh_token' => Str::random(40),
                     'token_expried' => date('Y-m-d H:i:s', strtotime(" +30 day")), //thoi han
                     'refresh_token_expried' => date('Y-m-d H:i:s', strtotime(" +360 day")),
-                    'id_user' => auth()->id()
+                    'id_user' => auth()->id(),
                 ]);
             } else {
                 $userSession = $checkTokenExit;
@@ -77,18 +78,18 @@ class AcountCustomer extends Controller
             return response()->json([
                 'code' => 200,
                 'msg' => "Đăng nhập thành công",
-                'data' => $userSession
+                'data' => $userSession,
             ], 200);
         } else {
             return response()->json([
                 'code' => 401,
-                'msg' => "Email hoặc mật khẩu không đúng"
+                'msg' => "Email hoặc mật khẩu không đúng",
             ], 401);
         }
     }
     //refreshToken
     public function refresh_token(Request $request)
-    {   //khi het han::
+    { //khi het han::
         // Gui lien tuc khi ..product-->check->out login
         $token = $request->header('token');
 
@@ -107,7 +108,7 @@ class AcountCustomer extends Controller
                     'code' => 200,
                     'data' => $dataSession,
                     "time" => time(),
-                    'message' => "Refresh token sucess"
+                    'message' => "Refresh token sucess",
                 ], 200);
             } else {
 
@@ -115,7 +116,7 @@ class AcountCustomer extends Controller
                     'code' => 200,
                     'message' => "Token chua het han",
                     "expried" => $checkTokenIsValid->token_expried,
-                    "date" => date('Y-m-d H:i:s')
+                    "date" => date('Y-m-d H:i:s'),
                 ], 200);
             }
         } else {
@@ -137,7 +138,7 @@ class AcountCustomer extends Controller
 
         return response()->json([
             'code' => 200,
-            'message' => "Delete token sucess"
+            'message' => "Delete token sucess",
         ], 200);
     }
     //login
@@ -159,14 +160,14 @@ class AcountCustomer extends Controller
                     'refresh_token' => Str::random(40),
                     'token_expried' => date('Y-m-d H:i:s', strtotime(" +30 day")), //thoi han
                     'refresh_token_expried' => date('Y-m-d H:i:s', strtotime(" +360 day")),
-                    'id_user' => auth()->id()
+                    'id_user' => auth()->id(),
                 ]);
             } else {
                 $userSession = $checkTokenExit;
             }
-            // $permission = DB::table('role_user')
-            //     ->where("id_user",   $userSession->id_user)
-            //     ->join("roles", "roles.id", "like", "role_user.id_role")
+            $permission = DB::table('role_user')
+                ->where("id_user", $userSession->id_user)
+                ->join("roles", "roles.id", "like", "role_user.id_role")->get();
             //     ->join("role_permission", "role_permission.id_role", "like", "roles.id")
             //     ->join("permissions", "permissions.id", "like", "role_permission.id_permission")
             //     ->select("permissions.id", "permissions.name")
@@ -177,12 +178,12 @@ class AcountCustomer extends Controller
                 'code' => 200,
                 'message' => "success",
                 'data' => $userSession,
-                // "permission" => $permission
+                "permission" => $permission,
             ], 200);
         } else {
             return response()->json([
                 'code' => 401,
-                'message' => "user name or password false store"
+                'message' => "user name or password false store",
             ], 401);
         }
     }
