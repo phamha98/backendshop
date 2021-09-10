@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Permission extends Model
 {
     //
-    protected $table="permissions";
-     
+    protected $table = "permissions";
+    protected $table3 = "role_permission";
 }
