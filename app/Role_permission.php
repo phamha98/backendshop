@@ -9,6 +9,9 @@ class Role_permission extends Model
     //
    
     protected $table="role_permission";
+    protected $fillable = [
+        'id_permission', 'id_role'
+    ];
     public function permission(){
         return $this->belongsTo("App\Permission","id","id_permision");
     }
