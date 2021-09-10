@@ -166,9 +166,9 @@ class AcountCustomer extends Controller
             }
             $permission = DB::table('role_user')
                 ->where("id_user",   $userSession->id_user)
-                ->join("roles", "roles.id", "=", "role_user.id_role")
-                ->join("role_permission", "role_permission.id_role", "=", "roles.id")
-                ->join("permissions", "permissions.id", "=", "role_permission.id_permission")
+                ->join("roles", "roles.id", "like", "role_user.id_role")
+                ->join("role_permission", "role_permission.id_role", "like", "roles.id")
+                ->join("permissions", "permissions.id", "like", "role_permission.id_permission")
                 ->select("permissions.id", "permissions.name")
                 ->groupBy("permissions.id", "permissions.name")
                 ->get();

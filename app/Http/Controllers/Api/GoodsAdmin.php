@@ -474,75 +474,74 @@ class GoodsAdmin extends Controller
 
         DB::beginTransaction();
         try {
-        $url = $request->input("img");
-        $image = $url;
-        if (substr($url, 0, 5) == "data:") {
-            $base64 = $request->input("img");
-            $MediaFunction = new MediaFunction();
-            $image = $MediaFunction->saveImgBase64($base64, 'imagetypemain');
-        } else if (strpos($url, asset('')) === 0) {
-            $image = basename($url);
-        }
-
-        $product_detail = product_type_details::where("id", $request->id_type_details) 
-            ->update(
-                [
-                    'id_type_main' => $request->id_type_main,
-                    'name' => $request->name,
-                    'details' => $request->details,
-                    'price' => $request->price,
-                    'sale' => $request->sale,
-                    'new' => $request->new,
-                    'img' => $image,
-                    'gender' => $request->gender,
-                    'type' => "open",
-
-                ]
-            );
-             
-        DB::table('image_albums')->where('id_type_details', 'like', $request->id_type_details)->delete();
-        $image_albums = $request->input('image_albums');
-        for ($i = 0; $i < count($image_albums); $i++) {
-            $string = "image_albums." . (string) $i;
-            $temp_url = $request->input($string . ".name");
-            $temp_base64 = $request->input($string . ".base64");
-
-            $nameImage = $url;
-            if (strpos($url, asset('')) === 0) {
-                $nameImage = basename($temp_url);
-            }
-            if (!empty($temp_base64)) {
-                $base64 = $request->input($string . ".base64");
+            $url = $request->input("img");
+            $image = $url;
+            if (substr($url, 0, 5) == "data:") {
+                $base64 = $request->input("img");
                 $MediaFunction = new MediaFunction();
-                $nameImage = $MediaFunction->saveImgBase64($base64, 'imagetypemain');
+                $image = $MediaFunction->saveImgBase64($base64, 'imagetypemain');
+            } else if (strpos($url, asset('')) === 0) {
+                $image = basename($url);
             }
 
-            DB::table('image_albums')->insert(
-                [
-                    'id_type_details' => $request->id_type_details,
-                    'name' => $nameImage,
-                ]
-            );
-        }
-        $where_products = Product::where("id_type_details", $request->id_type_details)->get();
-        for ($i = 0; $i < count($where_products); $i++) {
-            $string = "products." . (string) $i;
-            Product::where("id", $where_products[$i]->id)
+            $product_detail = product_type_details::where("id", $request->id_type_details)
                 ->update(
                     [
-                        'size' => $request->input($string . ".size"),
-                        'number' => $request->input($string . ".number"),
+                        'id_type_main' => $request->id_type_main,
+                        'name' => $request->name,
+                        'details' => $request->details,
+                        'price' => $request->price,
+                        'sale' => $request->sale,
+                        'new' => $request->new,
+                        'img' => $image,
+                        'gender' => $request->gender,
+                        'type' => "open",
+
                     ]
                 );
-        }
 
-        DB::commit();
-        return response()->json([
-            'code' => 200,
-            'message' => "success",
-        ], 200);
-        }
-        catch (\Exception $e) {
+            DB::table('image_albums')->where('id_type_details', 'like', $request->id_type_details)->delete();
+            $image_albums = $request->input('image_albums');
+            for ($i = 0; $i < count($image_albums); $i++) {
+                $string = "image_albums." . (string) $i;
+                $temp_url = $request->input($string . ".name");
+                $temp_base64 = $request->input($string . ".base64");
+
+                $nameImage = $url;
+                if (strpos($url, asset('')) === 0) {
+                    $nameImage = basename($temp_url);
+                }
+                if (!empty($temp_base64)) {
+                    $base64 = $request->input($string . ".base64");
+                    $MediaFunction = new MediaFunction();
+                    $nameImage = $MediaFunction->saveImgBase64($base64, 'imagetypemain');
+                }
+
+                DB::table('image_albums')->insert(
+                    [
+                        'id_type_details' => $request->id_type_details,
+                        'name' => $nameImage,
+                    ]
+                );
+            }
+            $where_products = Product::where("id_type_details", $request->id_type_details)->get();
+            for ($i = 0; $i < count($where_products); $i++) {
+                $string = "products." . (string) $i;
+                Product::where("id", $where_products[$i]->id)
+                    ->update(
+                        [
+                            'size' => $request->input($string . ".size"),
+                            'number' => $request->input($string . ".number"),
+                        ]
+                    );
+            }
+
+            DB::commit();
+            return response()->json([
+                'code' => 200,
+                'message' => "success",
+            ], 200);
+        } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'code' => 401,
@@ -638,16 +637,21 @@ class GoodsAdmin extends Controller
 
         DB::beginTransaction();
         try {
-            $id_product_detail = $request->input("id");
-            $table = DB::table("product_type_details")
+            $id_product_detail = $request->input("id");//id
+            $product_detail = DB::table("product_type_details")
                 ->where("id", $id_product_detail)
-                ->update([
-                    "type" => "close",
-                ]);
+                ->delete();
+
+            $array_image = DB::table("image_albums")
+                ->where("id_type_details", $id_product_detail)
+                ->delete();
+            $array_product_size = DB::table("products")
+                ->where("id_type_details", $id_product_detail)
+                ->delete();
             DB::commit();
             return response()->json([
                 'code' => 200,
-                'table' => $table,
+                'msg' =>"success",
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -658,4 +662,28 @@ class GoodsAdmin extends Controller
         }
     }
 
+    public function state_product(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $id_product_detail = $request->input("id");
+            $state = $request->input("state");
+            $table = DB::table("product_type_details")
+                ->where("id", $id_product_detail)
+                ->update([
+                    "type" => $state,
+                ]);
+            DB::commit();
+            return response()->json([
+                'code' => 200,
+                'data' => $table,
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'code' => 401,
+                'message' => "ERROR",
+            ], 401);
+        }
+    }
 }

@@ -123,6 +123,7 @@ Route::group(
         Route::post('/insert_type_main', 'Api\GoodsAdmin@insert_type_main');
         Route::post('/update_type_main', 'Api\GoodsAdmin@update_type_main');
         Route::post('/delete_product', 'Api\GoodsAdmin@delete_product');
+        Route::post('/state_product', 'Api\GoodsAdmin@state_product');
     }
 );
 //Permission
