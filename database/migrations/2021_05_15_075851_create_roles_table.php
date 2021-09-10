@@ -20,7 +20,7 @@ class CreateRolesTable extends Migration
             $table->timestamps();
         });
         Schema::create('role_user', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->bigIncrements('id');//bigIncrements
             $table->string('id_user');
             $table->string('id_role');
             //$table->foreign('id_user')->references('id')->on('users')->onDelete('CASCADE');

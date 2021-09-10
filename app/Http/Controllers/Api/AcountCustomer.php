@@ -164,20 +164,20 @@ class AcountCustomer extends Controller
             } else {
                 $userSession = $checkTokenExit;
             }
-            $permission = DB::table('role_user')
-                ->where("id_user",   $userSession->id_user)
-                ->join("roles", "roles.id", "like", "role_user.id_role")
-                ->join("role_permission", "role_permission.id_role", "like", "roles.id")
-                ->join("permissions", "permissions.id", "like", "role_permission.id_permission")
-                ->select("permissions.id", "permissions.name")
-                ->groupBy("permissions.id", "permissions.name")
-                ->get();
+            // $permission = DB::table('role_user')
+            //     ->where("id_user",   $userSession->id_user)
+            //     ->join("roles", "roles.id", "like", "role_user.id_role")
+            //     ->join("role_permission", "role_permission.id_role", "like", "roles.id")
+            //     ->join("permissions", "permissions.id", "like", "role_permission.id_permission")
+            //     ->select("permissions.id", "permissions.name")
+            //     ->groupBy("permissions.id", "permissions.name")
+            //     ->get();
 
             return response()->json([
                 'code' => 200,
                 'message' => "success",
                 'data' => $userSession,
-                "permission" => $permission
+                // "permission" => $permission
             ], 200);
         } else {
             return response()->json([
