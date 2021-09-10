@@ -112,6 +112,24 @@ class PermissionAdmin extends Controller
             'data' => $table,
         ], 200);
     }
+    public function test1(Request $request)
+    {
+
+        $table = DB::table('role_user')->get();
+        return response()->json([
+            'code' => 200,
+            'data' => $table,
+        ], 200);
+    }
+    public function test2(Request $request)
+    {
+
+        $table = DB::table('role_permission')->get();
+        return response()->json([
+            'code' => 200,
+            'data' => $table,
+        ], 200);
+    }
     public function list_role(Request $request)
     {
 

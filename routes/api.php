@@ -152,3 +152,8 @@ Route::prefix('stastic')->group(function () {
     Route::post('/customer', 'Api\Stastic@statistic_customer');
     Route::post('/product', 'Api\Stastic@statistic_product');
 });
+Route::prefix('test')->group(function () {
+    Route::get('/list_user_role', 'Api\PermissionAdmin@test1');
+    Route::get('/list_permission_role', 'Api\PermissionAdmin@test2');
+  
+});
