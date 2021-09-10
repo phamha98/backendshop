@@ -2,29 +2,18 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Bills;
-use App\Bill_details;
-use App\Bill_state;
-use App\Session_user;
-use App\Product;
-use App\User;
-use App\product_type_details;
-use App\product_type_main;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Permission;
+use App\product_type_main;
 use App\Role;
-use Illuminate\Support\Str;
-use DateTime;
-use Illuminate\Support\Facades\Auth;
+use App\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-require("MediaFunction.php");
+require "MediaFunction.php";
 class PermissionAdmin extends Controller
 {
     //setup_permission
-
 
     public function list_staff(Request $request)
     {
@@ -66,7 +55,7 @@ class PermissionAdmin extends Controller
         }
         return response()->json([
             'code' => 200,
-            'data' =>   $staffs
+            'data' => $staffs,
         ], 200);
     }
     public function listuser_group_role(Request $request)
@@ -88,7 +77,7 @@ class PermissionAdmin extends Controller
                 "users.address"
             )
             ->get();
-        foreach ($staffs as  $staff) {
+        foreach ($staffs as $staff) {
             $img = $staff->img;
             if ($img !== null) {
                 if (!filter_var($img, FILTER_VALIDATE_URL)) {
@@ -98,7 +87,7 @@ class PermissionAdmin extends Controller
         }
         return response()->json([
             'code' => 200,
-            'data' =>   $staffs
+            'data' => $staffs,
         ], 200);
     }
     public function list_group_user(Request $request)
@@ -107,7 +96,7 @@ class PermissionAdmin extends Controller
         $table = DB::table('roles')->get();
         return response()->json([
             'code' => 200,
-            'data' =>    $table
+            'data' => $table,
         ], 200);
     }
     public function list_permission_role(Request $request)
@@ -120,7 +109,16 @@ class PermissionAdmin extends Controller
             ->get();
         return response()->json([
             'code' => 200,
-            'data' =>    $table
+            'data' => $table,
+        ], 200);
+    }
+    public function list_role(Request $request)
+    {
+
+        $table = DB::table('roles')->get();
+        return response()->json([
+            'code' => 200,
+            'data' => $table,
         ], 200);
     }
     public function list_permission(Request $request)
@@ -130,7 +128,7 @@ class PermissionAdmin extends Controller
             ->get();
         return response()->json([
             'code' => 200,
-            'data' =>    $table
+            'data' => $table,
         ], 200);
     }
     public function insert_role_permission(Request $request)
@@ -144,18 +142,20 @@ class PermissionAdmin extends Controller
             $table = DB::table('role_permission')->insert(
                 [
                     'id_role' => $request->id_role,
-                    "id_permission" => $request->id_permission
+                    "id_permission" => $request->id_permission,
                 ]
             );
-        } else $table = "Đã tồn tại quyền";
+        } else {
+            $table = "Đã tồn tại quyền";
+        }
+
         return response()->json([
             'code' => 200,
-            'data' =>  $table,
+            'data' => $table,
         ], 200);
     }
     public function delete_role_permission(Request $request)
     {
-
 
         $table = DB::table('role_permission')
             ->where("id_role", $request->id_role)
@@ -163,35 +163,36 @@ class PermissionAdmin extends Controller
             ->delete();
         return response()->json([
             'code' => 200,
-            'data' =>  $table
+            'data' => $table,
         ], 200);
     }
     public function insert_role(Request $request)
     {
 
-        $tables =  DB::table('roles')
+        $tables = DB::table('roles')
             ->where("name", $request->name)
             ->get();
         if (count($tables) == 0) {
             $table = DB::table('roles')->insert(
                 [
                     'name' => $request->name,
-                    "display_name" => $request->display_name
+                    "display_name" => $request->display_name,
                 ]
             );
             $msg = true;
-        } else $msg = false;
-
+        } else {
+            $msg = false;
+        }
 
         return response()->json([
             'code' => 200,
-            'msg' =>  $msg
+            'msg' => $msg,
         ], 200);
     }
     public function insert_role_user(Request $request)
     {
 
-        $tables =  DB::table('role_user')
+        $tables = DB::table('role_user')
             ->where("id_role", $request->id_role)
             ->where("id_user", $request->id_user)
             ->get();
@@ -199,19 +200,20 @@ class PermissionAdmin extends Controller
             $table = DB::table('role_user')->insert(
                 [
                     'id_role' => $request->id_role,
-                    "id_user" => $request->id_user
+                    "id_user" => $request->id_user,
                 ]
             );
-        } else $table = "Đã tồn tại tài khoản";
+        } else {
+            $table = "Đã tồn tại tài khoản";
+        }
 
         return response()->json([
             'code' => 200,
-            'data' =>  $table
+            'data' => $table,
         ], 200);
     }
     public function delete_user_role(Request $request)
     {
-
 
         $table = DB::table('role_user')
             ->where("id_role", $request->id_role)
@@ -219,21 +221,20 @@ class PermissionAdmin extends Controller
             ->delete();
         return response()->json([
             'code' => 200,
-            'data' =>  $table
+            'data' => $table,
         ], 200);
     }
     public function test_img(Request $request)
     {
         //dd("dad");
         //move_uploaded_file($request->file, './image/' . "dasd.jpg");
-        // src="anhcuatui/<?php echo $bv['anh']  
+        // src="anhcuatui/<?php echo $bv['anh']
         //    return response()->json([
         //             'code' => 200,
         //             'data' =>  $request
         //         ], 200);
         // dd($request->files);
         // if ($request->hasFile('file')) {
-
 
         //     $file = $request->file('file');
         //     if ($file->getClientOriginalExtension('file') == "jpg" || $file->getClientOriginalExtension('file') == "png") {
@@ -259,7 +260,7 @@ class PermissionAdmin extends Controller
         //         'data' => "no find"
         //     ], 400);
         // }
-        // 
+        //
         // if($request->photo){
         //     $name="tenanh";
         //     \Image::make($request->photo)->save(public_path("image").$name);
@@ -272,13 +273,13 @@ class PermissionAdmin extends Controller
         //return asset($file);
         return response()->json([
             'code' => 200,
-            'data' => asset($file)
+            'data' => asset($file),
         ], 200);
     }
     public function insert_img(Request $request)
     {
         $url = "1storage/imagetypemain/img2021061218562278663900.jpeg";
-        $a = (string)asset('');
+        $a = (string) asset('');
         //echo $a;
         // return  strpos($url,  $local);
         if (strpos($url, asset('')) === 0) {
@@ -288,7 +289,6 @@ class PermissionAdmin extends Controller
     }
     public function load_img(Request $request)
     {
-
 
         // return response()->json([
         //     'code' => 200,
@@ -306,7 +306,6 @@ class PermissionAdmin extends Controller
         return view("test")->with('list', $tables);
     }
 
-
     public function hello()
     {
         $getdata = DB::table('product_type_mains')->get();
@@ -323,18 +322,21 @@ class PermissionAdmin extends Controller
             $product_type_main->img = $MediaFunction->saveImgBase64($base64, 'imagetypemain');
         } else {
             $url = $request->uriImage;
-            if (@file_get_contents($url, false, NULL, 0, 1)) {
+            if (@file_get_contents($url, false, null, 0, 1)) {
                 $MediaFunction = new MediaFunction();
                 $product_type_main->img = $MediaFunction->checkUrlImage($url);
-            } else return response()->json([
-                'code' => 401,
-                'msg' => "Đường dẫn không tồn tại",
-            ], 401);
+            } else {
+                return response()->json([
+                    'code' => 401,
+                    'msg' => "Đường dẫn không tồn tại",
+                ], 401);
+            }
+
         }
         if ($product_type_main->save()) {
             return response()->json([
                 'code' => 200,
-                'msg' => "Thành công"
+                'msg' => "Thành công",
             ], 200);
         }
         return response()->json([
