@@ -13,21 +13,21 @@ Route::post('setup_products', 'Api\MediaFunction@setup_products');
 Route::prefix('post_tags')->group(function () {
     Route::get('/load', 'Api\PostController@load');
     Route::post('/insert', 'Api\PostController@insert');
-    Route::post('/delete', 'Api\PostController@delete');//->middleware('verfiy-account');
-    Route::post('/update', 'Api\PostController@update');//->middleware('verfiy-account');
-  
+    Route::post('/delete', 'Api\PostController@delete'); //->middleware('verfiy-account');
+    Route::post('/update', 'Api\PostController@update'); //->middleware('verfiy-account');
+
 });
 
 //wishlist
 Route::prefix('wishlist')->group(function () {
-    Route::post('/insert_wish', 'Api\Wish@insert_wish');//->middleware('verfiy-account');
+    Route::post('/insert_wish', 'Api\Wish@insert_wish'); //->middleware('verfiy-account');
     Route::post('/load_number_product_wish', 'Api\Wish@load_number_product_wish');
     Route::post('/load_user_wish', 'Api\Wish@load_user_wish')->middleware('verfiy-account');
-    
+
 });
 //Products_Customer
 Route::prefix('products_customer')->group(function () {
-    
+
     Route::get('/list_product', 'Api\ProductsCustomer@list_product');
     Route::get('/new_product', 'Api\ProductsCustomer@new_product');
     Route::get('/sale_product', 'Api\ProductsCustomer@sale_product');
@@ -44,11 +44,10 @@ Route::prefix('products_customer')->group(function () {
     Route::post('setup_products', 'Api\ProductsCustomer@setup_products');
 });
 
- 
 //Bills_Customer
 Route::group(
     ['prefix' => '/bills_customer', 'middleware' => ['verfiy-account']],
-    function () { 
+    function () {
         Route::post('/insert_fullbills', 'Api\BillsCustomer@insert_fullbills');
         Route::post('/show_billstate_user', 'Api\BillsCustomer@show_billstate_user');
         Route::post('/show_billdetail', 'Api\BillsCustomer@show_billdetail');
@@ -80,7 +79,7 @@ Route::group(
     }
 );
 
-//order_admin 
+//order_admin
 Route::group(
     ['prefix' => '/orderadmin', 'middleware' => ['verfiy-account']],
     function () {
@@ -99,9 +98,6 @@ Route::group(
         Route::post('/bill_user_state', 'Api\OrderAdmin@bill_user_state');
     }
 );
-
-
-
 
 //GoodsAdmin
 Route::group(
@@ -135,6 +131,7 @@ Route::group(
         Route::get('/list_group_user', 'Api\PermissionAdmin@list_group_user');
         Route::post('/list_permission_role', 'Api\PermissionAdmin@list_permission_role');
         Route::get('/list_permission', 'Api\PermissionAdmin@list_permission');
+        Route::get('/list_role', 'Api\PermissionAdmin@list_role');
         Route::post('/listuser_group_role', 'Api\PermissionAdmin@listuser_group_role');
         Route::post('/delete_role_permission', 'Api\PermissionAdmin@delete_role_permission');
         Route::post('/insert_role_permission', 'Api\PermissionAdmin@insert_role_permission');
@@ -148,7 +145,6 @@ Route::group(
         Route::post('/insert_img', 'Api\PermissionAdmin@insert_img');
     }
 );
-
 
 //Stastic
 Route::prefix('stastic')->group(function () {
