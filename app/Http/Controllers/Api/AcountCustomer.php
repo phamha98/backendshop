@@ -165,20 +165,48 @@ class AcountCustomer extends Controller
             } else {
                 $userSession = $checkTokenExit;
             }
-            $permission = DB::table('role_user')
-                ->where("id_user", $userSession->id_user)
-                ->join("roles", "roles.id", "=", "role_user.id_role")->get();
+            // $permission = DB::table('role_user')
+            //     ->where("id_user", $userSession->id_user)
+            //     ->join("roles", "roles.id", "=", "role_user.id_role")
             //     ->join("role_permission", "role_permission.id_role", "like", "roles.id")
             //     ->join("permissions", "permissions.id", "like", "role_permission.id_permission")
             //     ->select("permissions.id", "permissions.name")
             //     ->groupBy("permissions.id", "permissions.name")
             //     ->get();
+            $array_role = DB::table('role_user')
+                ->where("id_user", $userSession->id_user)->select("id_role")->get();
+            $permission_temp = array();
+            foreach ($array_role as $role) {
+                # code...
+                $array_per = DB::table('role_permission')
+                    ->where("id_role", $role->id_role)->select("id_permission")->get();
+                $role->array_per = $array_per;
+                foreach ($array_per as $value) {
+                    # code...
+                    array_push($permission_temp, $value->id_permission);
+                }
 
+            }
+            $id_permission = array_unique($permission_temp);
+            $permission = array();
+            foreach ($id_permission as $key => $id) {
+                # code...
+                $ob = DB::table('permissions')->select("id", "name")->find($id);
+                if ($ob) {
+                    array_push($permission, $ob);
+                }
+
+            }
+
+            //  dd($permission);  ;
+            // return null;
             return response()->json([
                 'code' => 200,
                 'message' => "success",
-                'data' => $userSession,
-                "permission" => $permission,
+                // 'data' => $userSession,
+                //"permission" => $permission,
+                "test" => $permission,
+
             ], 200);
         } else {
             return response()->json([

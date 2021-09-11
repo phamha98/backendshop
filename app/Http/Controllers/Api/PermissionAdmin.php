@@ -209,7 +209,7 @@ class PermissionAdmin extends Controller
     }
     public function insert_role_user(Request $request)
     {
-
+        //error check account
         $tables = DB::table('role_user')
             ->where("id_role", $request->id_role)
             ->where("id_user", $request->id_user)
