@@ -203,9 +203,8 @@ class AcountCustomer extends Controller
             return response()->json([
                 'code' => 200,
                 'message' => "success",
-                // 'data' => $userSession,
-                //"permission" => $permission,
-                "test" => $permission,
+                'data' => $userSession,
+                "permission" => $permission,
 
             ], 200);
         } else {
