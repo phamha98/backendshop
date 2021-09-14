@@ -35,31 +35,25 @@ class GoodsAdmin extends Controller
 
         $insert = new product_type_main();
         $insert->name = $request->input('name');
-
-        if ($request->input('post')) {
-            $base64 = $request->input("base64");
+        $url = $request->input("img");
+        $image = "";
+        if (substr($url, 0, 5) === "data:") {
+            $base64 = $request->input("img");
             $MediaFunction = new MediaFunction();
             $insert->img = $MediaFunction->saveImgBase64($base64, 'imagetypemain');
-        } else {
-            $url = $request->input("url");
-            if (strpos($url, asset('')) === 0) {
-                return response()->json([
-                    'code' => 401,
-                    'message' => "Đường dẫn Sai",
-                ], 401);
-            }
-            if (@file_get_contents($url, false, null, 0, 1)) {
-                $MediaFunction = new MediaFunction();
-                $insert->img = $MediaFunction->checkUrlImage($url);
-            } else {
-                return response()->json([
-                    'code' => 401,
-                    'message' => "Đường dẫn không tồn tại",
-                ], 401);
-            }
-
-        }
-        //________
+        } else if (strpos($url, asset('')) === 0) {
+            $insert->img = basename($url);
+        } else if (@file_get_contents($url, false, null, 0, 1)) {
+            $MediaFunction = new MediaFunction();
+            $insert->img = $MediaFunction->checkUrlImage($url);
+        } 
+        // else {
+        //     return response()->json([
+        //         'code' => 401,
+        //         'message' => "Đường dẫn không tồn tại",
+        //     ], 401);
+        // }
+        // $insert->img = $image;
         if ($insert->save()) {
             return response()->json([
                 'code' => 200,
@@ -637,7 +631,7 @@ class GoodsAdmin extends Controller
 
         DB::beginTransaction();
         try {
-            $id_product_detail = $request->input("id");//id
+            $id_product_detail = $request->input("id"); //id
             $product_detail = DB::table("product_type_details")
                 ->where("id", $id_product_detail)
                 ->delete();
@@ -651,7 +645,7 @@ class GoodsAdmin extends Controller
             DB::commit();
             return response()->json([
                 'code' => 200,
-                'msg' =>"success",
+                'msg' => "success",
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();

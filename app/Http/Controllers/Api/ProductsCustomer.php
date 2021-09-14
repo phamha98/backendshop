@@ -77,19 +77,7 @@ class ProductsCustomer extends Controller
     }
     public function show_product(Request $request)
     {   
-        $wish=new wishlists();
-        $count=wishlists::where("id_product_details",$request->id_type_details)
-        ->count();
-        $wish->count=$count;
-
-        if($request->id_user!=="") {
-            $find=wishlists::where("id_user",$request->id_user)
-            ->where("id_product_details",$request->id_type_details)
-         ->first();
-         if($find)$wish->state=true;
-         else $wish->state=false;
-          
-        }
+       
         $product = DB::table("products")
             ->where('id_type_details', 'like', $request->id_type_details)
             ->select("id", "number", "size")
@@ -104,12 +92,37 @@ class ProductsCustomer extends Controller
                 $image->name = asset('storage/imagetypemain/' . $img);
             }
         }
+        $data = new ImageAlbum;
+        $data->sizes=$product;
+        $data->images=$images; 
         return response()->json([
             'code' => 200,
-            'product' => $product,
-            "img" => $images,
-            "wish"=>$wish
+            'data' => $data,
+           
         ], 200);
+    }
+    public function get_product_details(Request $request){
+        $product_detail = DB::table("product_type_details")->find($request->id);
+        $product = DB::table("products")
+            ->where('id_type_details', 'like', $request->id)
+            ->select("id", "number", "size")
+            ->get();
+        $ob=new  ImageAlbum;
+        $ob->product_detail= $product_detail;
+        $ob->product= $product;
+       if($product_detail) return response()->json([
+            'code' => 200,
+            'data' =>  $ob,
+           
+        ], 200);
+        else return response()->json([
+            'code' => 400,
+            'data' => false,
+            'msg'=>"error"
+           
+        ], 400);
+             
+             
     }
     public function filterproduct(Request $request)
     {
@@ -224,7 +237,7 @@ class ProductsCustomer extends Controller
     {
 
         $products_details = product_type_details::where("id_type_main", $request->id_type_main)
-            ->select("id", "name", "id_type_main", "price", "sale", "new", "img", "gender", "type")
+            ->select("id", "name","details", "id_type_main", "price", "sale", "new", "img", "gender", "type")
             ->get();
         foreach ($products_details as $products_detail) {
             $img = $products_detail->img;

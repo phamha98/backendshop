@@ -23,7 +23,10 @@ Route::prefix('wishlist')->group(function () {
     Route::post('/insert_wish', 'Api\Wish@insert_wish'); //->middleware('verfiy-account');
     Route::post('/load_number_product_wish', 'Api\Wish@load_number_product_wish');
     Route::post('/load_user_wish', 'Api\Wish@load_user_wish')->middleware('verfiy-account');
-
+    Route::post('/get_wish_user', 'Api\Wish@get_wish_user');
+    Route::post('/get_wish_product', 'Api\Wish@get_wish_product');
+    Route::post('/change_wish_user', 'Api\Wish@change_wish_user');
+  
 });
 //Products_Customer
 Route::prefix('products_customer')->group(function () {
@@ -32,6 +35,9 @@ Route::prefix('products_customer')->group(function () {
     Route::get('/new_product', 'Api\ProductsCustomer@new_product');
     Route::get('/sale_product', 'Api\ProductsCustomer@sale_product');
     Route::post('/show_product', 'Api\ProductsCustomer@show_product');
+    //
+    Route::post('/get_product_details', 'Api\ProductsCustomer@get_product_details');
+    
     //Search Home
     Route::post('/filterproduct', 'Api\ProductsCustomer@filterproduct');
     Route::post('/search', 'Api\ProductsCustomer@search');
