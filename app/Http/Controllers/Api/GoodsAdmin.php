@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Storage;
+
 use App\Http\Controllers\Controller;
 use App\ImageAlbum;
 use App\Product;
@@ -29,95 +31,101 @@ class GoodsAdmin extends Controller
             'data' => $tables,
         ], 200);
     }
-    //insert_type_main
+    // insert_type_main: 
     public function insert_type_main(Request $request)
     {
+        if (empty($request->type)) {
+            $type = $request->type;
+            $insert = new product_type_main();
+            $insert->name = $request->input('name');
+            $url = $request->input("url");
+            switch ($type) {
+                case '0':
+                    # insert image default
+                    $insert->img = $url;
+                    break;
+                case '1':
+                    # insert image link
+                    if (@file_get_contents($url, false, null, 0, 1)) {
+                        $MediaFunction = new MediaFunction();
+                        $insert->img = $MediaFunction->checkUrlImage($url);
+                    }
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+            $data = $insert->save();
+            if ($data) {
+                return response()->json([
+                    'code' => 200,
+                    'message' => "success",
+                ], 200);
+            }
+        }
+        return response()->json([
+            'code' => 401,
+            'message' => "error",
+        ], 401);
+    }
+    //test upload image
+    public function insert_type_main2(Request $request)
+    {
+        if (empty($request->type)) {
+            $id = $request->input("id");
+            $name = $request->input('name');
+            $url = $request->input("url");
+            $image = $url;
+            if (strpos($url, asset('')) === 0) {
+                $image =  basename($url);
+            }
 
-        $insert = new product_type_main();
-        $insert->name = $request->input('name');
-        $url = $request->input("img");
-        $image = "";
-        if (substr($url, 0, 5) === "data:") {
-            $base64 = $request->input("img");
-            $MediaFunction = new MediaFunction();
-            $insert->img = $MediaFunction->saveImgBase64($base64, 'imagetypemain');
-        } else if (strpos($url, asset('')) === 0) {
-            $insert->img = basename($url);
-        } else if (@file_get_contents($url, false, null, 0, 1)) {
-            $MediaFunction = new MediaFunction();
-            $insert->img = $MediaFunction->checkUrlImage($url);
-        } 
-        // else {
-        //     return response()->json([
-        //         'code' => 401,
-        //         'message' => "Đường dẫn không tồn tại",
-        //     ], 401);
-        // }
-        // $insert->img = $image;
-        if ($insert->save()) {
+            $update = DB::table("product_type_mains")
+                ->where('id', $id)
+                ->update([
+                    "name" => $name,
+                    "img" => $image,
+                ]);
+
             return response()->json([
                 'code' => 200,
-                'message' => "Thành công",
+                'message' => "success",
+                'data' => $update
             ], 200);
         }
         return response()->json([
             'code' => 401,
-            'message' => "Thất bại",
+            'message' => "error",
         ], 401);
     }
     //update_type_main
     public function update_type_main(Request $request)
     {
-
-        if ($request->input('post')) {
-            $base64 = $request->input("base64");
-            $MediaFunction = new MediaFunction();
-            $img = $MediaFunction->saveImgBase64($base64, 'imagetypemain');
-        } else {
-            $url = $request->input("url");
-            if (strpos($url, asset('')) === 0) {
-
-                $update = DB::table("product_type_mains")
-                    ->where('id', $request->input("id"))
-                    ->update([
-                        "name" => $request->input("name"),
-                    ]);
-                // $update = product_type_main::find($request->input("id"));
-                // $update->name = $request->input("name");
-                // $update->save();
-                return response()->json([
-                    'code' => 200,
-                    'message' => "SUCESS1",
-                    "url" => $url,
-                    "update" => $update,
-                    "id" => $request->input("id"),
-                    "name" => $request->name,
-                ], 200);
-            }
-            if (@file_get_contents($url, false, null, 0, 1)) {
-                $url = $request->input("url");
-                $MediaFunction = new MediaFunction();
-                $img = $MediaFunction->checkUrlImage($url);
-            } else {
-                return response()->json([
-                    'code' => 401,
-                    'message' => "Đường dẫn không tồn tại",
-                ], 401);
-            }
-
+        $id = $request->input("id"); //id
+        $name = $request->input('name'); //name
+        $url = $request->input("url"); //url
+        $image = $url;
+        if (strpos($url, asset('')) === 0) {
+            //domail current
+            $image =  basename($url);
         }
 
         $update = DB::table("product_type_mains")
-            ->where('id', $request->input("id"))
+            ->where('id', $id)
             ->update([
-                "name" => $request->input("name"),
-                "img" => $img,
+                "name" => $name,
+                "img" => $image,
             ]);
 
-        return response()->json([
+        if ($update) return response()->json([
             'code' => 200,
-            'message' => "SUCESS",
+            'message' => "success",
+            'data' => $update
         ], 200);
+        return response()->json([
+            'code' => 401,
+            'message' => "error",
+        ], 401);
     }
     //all for product type detail
     public function main_goods_details(Request $request)
@@ -539,11 +547,11 @@ class GoodsAdmin extends Controller
             DB::rollBack();
             return response()->json([
                 'code' => 401,
-                'message' => "Lỗi"+$e,
+                'message' => "Lỗi" + $e,
             ], 401);
         }
     }
-
+    // insert_goods:???  
     public function insert_goods(Request $request)
     {
 
@@ -596,17 +604,20 @@ class GoodsAdmin extends Controller
             DB::commit();
             return response()->json([
                 'code' => 200,
-                'message' => $product_detail,
+                'data' => $product_detail,
+                'msg' => "Thành công",
+
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'code' => 401,
-                'message' => "khong chen dc",
+                'msg' => "Thất bại",
+                'data' => $e
             ], 401);
         }
     }
-
+    // delete_type_main: 
     public function delete_type_main(Request $request)
     {
 

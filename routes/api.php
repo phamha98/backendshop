@@ -46,8 +46,8 @@ Route::prefix('products_customer')->group(function () {
     Route::post('/main_goods_details', 'Api\ProductsCustomer@main_goods_details');
     Route::get('/list_post', 'Api\ProductsCustomer@list_post');
     //
-    Route::post('setup_permission', 'Api\ProductsCustomer@setup_permission');
-    Route::post('setup_products', 'Api\ProductsCustomer@setup_products');
+    Route::post('setup_permission', 'Api\ProductsCustomer@setup_permission');//chinh thuc
+    Route::post('setup_products', 'Api\ProductsCustomer@setup_products');   //chinh thuc
 });
 
 //Bills_Customer
@@ -121,8 +121,9 @@ Route::group(
         Route::post('/sort_goods_price', 'Api\GoodsAdmin@sort_goods_price');
         Route::post('/update_goods', 'Api\GoodsAdmin@update_goods');
         Route::post('/insert_goods', 'Api\GoodsAdmin@insert_goods');
-        Route::post('/test', 'Api\GoodsAdmin@test');
+        Route::post('/test', 'Api\GoodsAdmin@test'); 
         Route::post('/insert_type_main', 'Api\GoodsAdmin@insert_type_main');
+        Route::post('/insert_type_main2', 'Api\GoodsAdmin@insert_type_main2');
         Route::post('/update_type_main', 'Api\GoodsAdmin@update_type_main');
         Route::post('/delete_product', 'Api\GoodsAdmin@delete_product');
         Route::post('/state_product', 'Api\GoodsAdmin@state_product');
@@ -158,8 +159,18 @@ Route::prefix('stastic')->group(function () {
     Route::post('/customer', 'Api\Stastic@statistic_customer');
     Route::post('/product', 'Api\Stastic@statistic_product');
 });
+//Libary
 Route::prefix('test')->group(function () {
     Route::get('/list_user_role', 'Api\PermissionAdmin@test1');
     Route::get('/list_permission_role', 'Api\PermissionAdmin@test2');
   
 });
+//Libary
+Route::group(
+    ['prefix' => '/libary', 'middleware' => ['verfiy-account']],
+    function () {
+        Route::post('/insert', 'Api\Libary@insert');
+        Route::post('/delete', 'Api\Libary@delete');
+        Route::post('/update', 'Api\Libary@update');
+    }
+);
